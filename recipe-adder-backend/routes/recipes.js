@@ -66,4 +66,16 @@ router.route('/').get((req, res) => {
   });
 });
 
+router.route('/:id').get((req, res) => {
+  Recipe.findById(req.params.id)
+    .then((recipe) => {
+      if (recipe) {
+        res.json(recipe);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
+});
+
 module.exports = router;

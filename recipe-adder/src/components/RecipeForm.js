@@ -1,91 +1,56 @@
-import { Container, Grid, TextField } from '@material-ui/core';
-
-import { Button, Typography, makeStyles, Paper } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import SearchForm from './SearchForm';
+import RecipeList from './RecipeList';
+import Pagination from '@material-ui/lab/Pagination';
 import recipeService from '../services/recipes';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& .MuiFormControl-root': {
-      width: '80%',
-      margin: theme.spacing(1),
-    },
-  },
-}));
-
 function RecipeForm() {
-  const [recipeName, setRecipeName] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(8);
 
-  const classes = useStyles();
+  useEffect(() => {
+    setLoading(true);
+    recipeService.getAll().then((initialRecipes) => {
+      setRecipes(initialRecipes);
+    });
+    setLoading(false);
+  }, []);
 
-  const addRecipe = (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append('name', recipeName);
-    formData.append('description', description);
-    formData.append('image', image);
+  // Get maximum page
+  let pageNumbers = 0;
 
-    recipeService.create(formData);
+  for (let i = 1; i <= Math.ceil(recipes.length / postsPerPage); i++) {
+    pageNumbers++;
+  }
+  //Get current posts
 
-    setRecipeName('');
-    setDescription('');
-    setImage('');
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentRecipes = recipes.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
+  if (loading) {
+    return <div>Loading ...</div>;
+  }
+
   return (
-    <Paper classes={classes.pageContent}>
-      <Container>
-        <Typography>Create a new Recipe</Typography>
+    <>
+      <SearchForm />
+      <RecipeList recipes={currentRecipes} />
 
-        <form
-          className={classes.root}
-          onSubmit={addRecipe}
-          encType='multipart/form-data'
-        >
-          <Grid container>
-            <Grid item xs={6}>
-              <TextField
-                required
-                id='outlined-basic'
-                label='Recipe Name'
-                variant='outlined'
-                value={recipeName}
-                onChange={(event) => setRecipeName(event.target.value)}
-              />
-              <TextField
-                required
-                id='outlined-basic'
-                label='Description'
-                variant='outlined'
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-              />
-            </Grid>
-
-            {/* //Upload Image Button */}
-
-            <label htmlFor='contained-button-file'>
-              <Button variant='contained' color='primary' component='span'>
-                Upload
-              </Button>
-            </label>
-            <input
-              style={{ display: 'none' }}
-              id='contained-button-file'
-              type='file'
-              accept='.png, .jpg, .jpeg'
-              onChange={(event) => setImage(event.target.files[0])}
-            />
-
-            <Button type='submit' color='primary' variant='contained'>
-              Submit
-            </Button>
-          </Grid>
-        </form>
-      </Container>
-    </Paper>
+      <nav>
+        <Pagination
+          count={pageNumbers}
+          page={currentPage}
+          onChange={handlePageChange}
+        />
+      </nav>
+    </>
   );
 }
 

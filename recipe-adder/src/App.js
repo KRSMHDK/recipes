@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import RecipeView from './components/RecipeView';
 import RecipeForm from './components/RecipeForm';
+import AddRecipeForm from './components/AddRecipeForm';
 import Layout from './components/Layout';
 
 function App() {
@@ -11,10 +11,10 @@ function App() {
         <Switch>
           <Layout>
             <Route exact path='/'>
-              <RecipeView />
+              <RecipeForm />
             </Route>
             <Route exact path='/addrecipe'>
-              <RecipeForm />
+              <AddRecipeForm />
             </Route>
           </Layout>
         </Switch>

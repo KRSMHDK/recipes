@@ -1,10 +1,4 @@
-import {
-  Container,
-  Grid,
-  TextField,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { TextField, Typography, makeStyles } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,12 +11,16 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     backgroundColor: 'white',
   },
+  bg: {
+    background:
+      'url("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Indian_SPices.jpg/618px-Indian_SPices.jpg")',
+  },
 }));
 
 function SearchForm() {
   const classes = useStyles();
   return (
-    <>
+    <div className={classes.bg}>
       <Typography variant='h2'>Recipe Searcher</Typography>
       <img
         style={{ width: '220px' }}
@@ -42,7 +40,7 @@ function SearchForm() {
         variant='outlined'
         color='primary'
       />
-    </>
+    </div>
   );
 }
 
